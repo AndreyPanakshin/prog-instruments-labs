@@ -61,7 +61,7 @@ class ImageProcessor:
         )
         print(f"Resized to: {new_width}x{new_height}")
 
-     def rotate(self, degrees):
+    def rotate(self, degrees):
         self.image = self.image.rotate(degrees, expand=True)
         print(f"Rotated by {degrees} degrees")
 
@@ -149,7 +149,7 @@ class ImageProcessor:
         )
         print(f"Added watermark: '{text}'")
 
-        def add_border(self, thickness=10, color=(255, 255, 255)):
+    def add_border(self, thickness=10, color=(255, 255, 255)):
         if self.image.mode != 'RGB':
             self.image = self.image.convert('RGB')
 
@@ -180,10 +180,10 @@ class ImageProcessor:
         return info
 
     def print_info(self):
-    info = self.get_image_info()
-    print("\n=== Image Information ===")
-    for key, value in info.items():
-        print(f"{key}: {value}")
+        info = self.get_image_info()
+        print("\n=== Image Information ===")
+        for key, value in info.items():
+            print(f"{key}: {value}")
 
 
 def process_single_image(args):
@@ -348,3 +348,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
