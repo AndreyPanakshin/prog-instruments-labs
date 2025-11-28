@@ -55,7 +55,7 @@ class ImageProcessor:
         else:
             print("No resize parameters provided")
             return
-
+    
         self.image = self.image.resize(
             (new_width, new_height), Image.Resampling.LANCZOS
         )
@@ -348,5 +348,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
