@@ -109,45 +109,45 @@ class ImageProcessor:
         print("Applied edge enhance filter")
 
     def add_watermark(self, text, position=(10, 10), font_size=20, opacity=128):
-        watermark = self.image.copy()
-        draw = ImageDraw.Draw(watermark)
+    watermark = self.image.copy()
+    draw = ImageDraw.Draw(watermark)
 
-        try:
-            font = ImageFont.truetype("arial.ttf", font_size)
-        except IOError:
-            font = ImageFont.load_default()
+    try:
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except IOError:
+        font = ImageFont.load_default()
 
-        bbox = draw.textbbox((0, 0), text, font=font)
-        text_width = bbox[2] - bbox[0]
-        text_height = bbox[3] - bbox[1]
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
 
-        if isinstance(position, str):
-            if position == "center":
-                x = (self.image.width - text_width) // 2
-                y = (self.image.height - text_height) // 2
-                position = (x, y)
-            elif position == "bottom-right":
-                x = self.image.width - text_width - 10
-                y = self.image.height - text_height - 10
-                position = (x, y)
+    if isinstance(position, str):
+        if position == "center":
+            x = (self.image.width - text_width) // 2
+            y = (self.image.height - text_height) // 2
+            position = (x, y)
+        elif position == "bottom-right":
+            x = self.image.width - text_width - 10
+            y = self.image.height - text_height - 10
+            position = (x, y)
 
-        padding = 5
-        draw.rectangle(
-            [
-                position[0] - padding,
-                position[1] - padding,
-                position[0] + text_width + padding,
-                position[1] + text_height + padding
-            ],
-            fill=(0, 0, 0, opacity // 2)
-        )
+    padding = 5
+    draw.rectangle(
+        [
+            position[0] - padding,
+            position[1] - padding,
+            position[0] + text_width + padding,
+            position[1] + text_height + padding
+        ],
+        fill=(0, 0, 0, opacity // 2)
+    )
 
-        draw.text(position, text, font=font, fill=(255, 255, 255, opacity))
+    draw.text(position, text, font=font, fill=(255, 255, 255, opacity))
 
-        self.image = Image.alpha_composite(
-            self.image.convert('RGBA'), watermark
-        )
-        print(f"Added watermark: '{text}'")
+    self.image = Image.alpha_composite(
+        self.image.convert('RGBA'), watermark
+    )
+    print(f"Added watermark: '{text}'")
 
     def add_border(self, thickness=10, color=(255, 255, 255)):
         if self.image.mode != 'RGB':
@@ -348,4 +348,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
