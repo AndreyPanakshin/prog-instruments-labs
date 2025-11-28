@@ -12,7 +12,10 @@ class ImageProcessor:
         if output_path:
             self.output_path = Path(output_path)
         else:
-            self.output_path = self.input_path.parent / f"{self.input_path.stem}_processed{self.input_path.suffix}"
+            self.output_path = (
+                self.input_path.parent /
+                f"{self.input_path.stem}_processed{self.input_path.suffix}"
+            )
 
         self.image = None
         self.load_image()
@@ -20,7 +23,10 @@ class ImageProcessor:
     def load_image(self):
         try:
             self.image = Image.open(self.input_path)
-            print(f"Loaded image: {self.input_path} ({self.image.size[0]}x{self.image.size[1]})")
+            print(
+                f"Loaded image: {self.input_path} "
+                f"({self.image.size[0]}x{self.image.size[1]})"
+            )
         except Exception as e:
             print(f"Error loading image: {e}")
             sys.exit(1)
@@ -50,10 +56,12 @@ class ImageProcessor:
             print("No resize parameters provided")
             return
 
-        self.image = self.image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        self.image = self.image.resize(
+            (new_width, new_height), Image.Resampling.LANCZOS
+        )
         print(f"Resized to: {new_width}x{new_height}")
 
-    def rotate(self, degrees):
+     def rotate(self, degrees):
         self.image = self.image.rotate(degrees, expand=True)
         print(f"Rotated by {degrees} degrees")
 
@@ -101,21 +109,18 @@ class ImageProcessor:
         print("Applied edge enhance filter")
 
     def add_watermark(self, text, position=(10, 10), font_size=20, opacity=128):
-        # Create a copy of the image to draw on
         watermark = self.image.copy()
         draw = ImageDraw.Draw(watermark)
 
         try:
             font = ImageFont.truetype("arial.ttf", font_size)
-        except:
+        except IOError:
             font = ImageFont.load_default()
 
-        # Get text bounding box
         bbox = draw.textbbox((0, 0), text, font=font)
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
 
-        # Calculate position if it's a string (e.g., "center")
         if isinstance(position, str):
             if position == "center":
                 x = (self.image.width - text_width) // 2
@@ -126,22 +131,25 @@ class ImageProcessor:
                 y = self.image.height - text_height - 10
                 position = (x, y)
 
-        # Draw semi-transparent background
         padding = 5
         draw.rectangle(
-            [position[0] - padding, position[1] - padding,
-             position[0] + text_width + padding, position[1] + text_height + padding],
+            [
+                position[0] - padding,
+                position[1] - padding,
+                position[0] + text_width + padding,
+                position[1] + text_height + padding
+            ],
             fill=(0, 0, 0, opacity // 2)
         )
 
-        # Draw text
         draw.text(position, text, font=font, fill=(255, 255, 255, opacity))
 
-        # Blend with original image
-        self.image = Image.alpha_composite(self.image.convert('RGBA'), watermark)
+        self.image = Image.alpha_composite(
+            self.image.convert('RGBA'), watermark
+        )
         print(f"Added watermark: '{text}'")
 
-    def add_border(self, thickness=10, color=(255, 255, 255)):
+        def add_border(self, thickness=10, color=(255, 255, 255)):
         if self.image.mode != 'RGB':
             self.image = self.image.convert('RGB')
 
@@ -155,7 +163,10 @@ class ImageProcessor:
 
     def create_thumbnail(self, size=(128, 128)):
         self.image.thumbnail(size, Image.Resampling.LANCZOS)
-        self.output_path = self.input_path.parent / f"{self.input_path.stem}_thumb{self.input_path.suffix}"
+        self.output_path = (
+            self.input_path.parent /
+            f"{self.input_path.stem}_thumb{self.input_path.suffix}"
+        )
         print(f"Created thumbnail: {size[0]}x{size[1]}")
 
     def get_image_info(self):
@@ -169,10 +180,10 @@ class ImageProcessor:
         return info
 
     def print_info(self):
-        info = self.get_image_info()
-        print("\n=== Image Information ===")
-        for key, value in info.items():
-            print(f"{key}: {value}")
+    info = self.get_image_info()
+    print("\n=== Image Information ===")
+    for key, value in info.items():
+        print(f"{key}: {value}")
 
 
 def process_single_image(args):
@@ -229,7 +240,7 @@ def process_single_image(args):
         thickness, color = args.border.split(',')
         thickness = int(thickness)
         if color.startswith('#'):
-            color = tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
+            color = tuple(int(color[i:i+2], 16) for i in (1, 3, 5))
         else:
             color = tuple(map(int, color.split(':')))
         processor.add_border(thickness, color)
@@ -241,9 +252,8 @@ def process_single_image(args):
     if args.info:
         processor.print_info()
 
-    if not args.info:  # Only save if we're not just getting info
+    if not args.info:
         processor.save_image(quality=args.quality)
-
 
 def process_batch(args):
     input_dir = Path(args.input)
@@ -255,8 +265,10 @@ def process_batch(args):
     output_dir.mkdir(exist_ok=True)
 
     supported_formats = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.webp'}
-    image_files = [f for f in input_dir.iterdir()
-                   if f.is_file() and f.suffix.lower() in supported_formats]
+    image_files = [
+        f for f in input_dir.iterdir()
+        if f.is_file() and f.suffix.lower() in supported_formats
+    ]
 
     if not image_files:
         print("No supported image files found in directory")
@@ -265,14 +277,13 @@ def process_batch(args):
     print(f"Found {len(image_files)} images to process")
 
     for i, image_file in enumerate(image_files, 1):
-        print(f"\nProcessing {i}/{len(image_files)}: {image_file.name}")
+        print(f"Processing {i}/{len(image_files)}: {image_file.name}")
         output_file = output_dir / image_file.name
 
-        # Create a new args object for each image
         image_args = argparse.Namespace(**vars(args))
         image_args.input = str(image_file)
         image_args.output = str(output_file)
-        image_args.info = False  # Don't show info for batch processing
+        image_args.info = False
 
         try:
             process_single_image(image_args)
@@ -281,36 +292,51 @@ def process_batch(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Advanced Image Processing Tool')
+    parser = argparse.ArgumentParser(
+        description='Advanced Image Processing Tool'
+    )
     parser.add_argument('input', help='Input image file or directory')
-    parser.add_argument('-o', '--output', help='Output image file or directory')
+    parser.add_argument(
+        '-o', '--output', help='Output image file or directory'
+    )
 
-    # Transformation options
     parser.add_argument('--resize', help='Resize image (WxH, W, H, or N%)')
-    parser.add_argument('--rotate', type=float, help='Rotate image by degrees')
-    parser.add_argument('--flip', choices=['horizontal', 'vertical'], help='Flip image')
-    parser.add_argument('--crop', help='Crop image (left,top,right,bottom)')
+    parser.add_argument(
+        '--rotate', type=float, help='Rotate image by degrees'
+    )
+    parser.add_argument(
+        '--flip', choices=['horizontal', 'vertical'], help='Flip image'
+    )
+    parser.add_argument('--crop', help='Crop image coordinates')
 
-    # Color adjustment options
-    parser.add_argument('--grayscale', action='store_true', help='Convert to grayscale')
-    parser.add_argument('--brightness', type=float, help='Adjust brightness (factor)')
-    parser.add_argument('--contrast', type=float, help='Adjust contrast (factor)')
-    parser.add_argument('--sharpness', type=float, help='Adjust sharpness (factor)')
+    parser.add_argument(
+        '--grayscale', action='store_true', help='Convert to grayscale'
+    )
+    parser.add_argument('--brightness', type=float, help='Adjust brightness')
+    parser.add_argument('--contrast', type=float, help='Adjust contrast')
+    parser.add_argument('--sharpness', type=float, help='Adjust sharpness')
 
-    # Filter options
-    parser.add_argument('--blur', type=float, help='Apply blur filter (radius)')
-    parser.add_argument('--sharpen', action='store_true', help='Apply sharpen filter')
-    parser.add_argument('--edge-enhance', action='store_true', help='Apply edge enhance')
+    parser.add_argument('--blur', type=float, help='Apply blur filter')
+    parser.add_argument(
+        '--sharpen', action='store_true', help='Sharpen filter'
+    )
+    parser.add_argument(
+        '--edge-enhance', action='store_true', help='Edge enhance'
+    )
 
-    # Effects options
     parser.add_argument('--watermark', help='Add text watermark')
     parser.add_argument('--border', help='Add border (thickness,color)')
     parser.add_argument('--thumbnail', help='Create thumbnail (WxH)')
 
-    # Other options
-    parser.add_argument('--quality', type=int, default=95, help='JPEG quality (1-100)')
-    parser.add_argument('--info', action='store_true', help='Show image information')
-    parser.add_argument('--batch', action='store_true', help='Batch process directory')
+    parser.add_argument(
+        '--quality', type=int, default=95, help='JPEG quality'
+    )
+    parser.add_argument(
+        '--info', action='store_true', help='Image information'
+    )
+    parser.add_argument(
+        '--batch', action='store_true', help='Batch processing'
+    )
 
     args = parser.parse_args()
 
