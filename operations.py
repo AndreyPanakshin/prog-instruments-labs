@@ -1,9 +1,9 @@
-class Operations:
+class StatisticsOperations:
     def calculate_average(self, numbers):
         if not numbers:
             return 0
         return sum(numbers) / len(numbers)
-
+    
     def find_max(self, numbers):
         if not numbers:
             return None
@@ -12,7 +12,7 @@ class Operations:
             if num > max_num:
                 max_num = num
         return max_num
-
+    
     def find_min(self, numbers):
         if not numbers:
             return None
@@ -22,6 +22,8 @@ class Operations:
                 min_num = num
         return min_num
 
+
+class MathOperations:
     def calculate_factorial(self, n):
         if n < 0:
             raise ValueError("Factorial is not defined for negative numbers!")
@@ -29,3 +31,7 @@ class Operations:
         for i in range(1, n + 1):
             result *= i
         return result
+
+
+class Operations(StatisticsOperations, MathOperations):
+    pass
