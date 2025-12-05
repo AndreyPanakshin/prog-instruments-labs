@@ -1,4 +1,5 @@
 from typing import Union
+from exceptions import DivisionByZeroError, NegativeSquareRootError
 
 Number = Union[int, float]
 
@@ -20,7 +21,7 @@ class Calculator:
     @staticmethod
     def divide(a: Number, b: Number) -> float:
         if b == 0:
-            raise ValueError("Cannot divide by zero!")
+            raise DivisionByZeroError()
         return a / b
     
     @staticmethod
@@ -30,5 +31,5 @@ class Calculator:
     @staticmethod
     def sqrt(a: Number) -> float:
         if a < 0:
-            raise ValueError("Cannot calculate square root of negative number!")
+            raise NegativeSquareRootError()
         return a ** 0.5
