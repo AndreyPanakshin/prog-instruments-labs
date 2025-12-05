@@ -1,9 +1,8 @@
 from calculator import Calculator
 from operations import StatisticsOperations, MathOperations, Operations
+from exceptions import CalculatorError
 
 def main():
-    # Теперь не нужно создавать экземпляры классов
-    
     # Демонстрация работы калькулятора
     print("Calculator Demo:")
     print(f"5 + 3 = {Calculator.add(5, 3)}")
@@ -23,18 +22,27 @@ def main():
     # Проверка обратной совместимости
     print(f"\nBackward compatibility - Average: {Operations.calculate_average(numbers)}")
     print(f"Backward compatibility - Factorial of 5: {Operations.calculate_factorial(5)}")
+    print(f"Backward compatibility - Average of empty list: {Operations.calculate_average([])}")
     
-    # Обработка ошибок
-    print("\nError Handling:")
-    try:
-        print(f"10 / 0 = {Calculator.divide(10, 0)}")
-    except ValueError as e:
-        print(f"Error: {e}")
+    # Обработка ошибок с унифицированными исключениями
+    print("\nError Handling (unified exceptions):")
     
-    try:
-        print(f"sqrt(-1) = {Calculator.sqrt(-1)}")
-    except ValueError as e:
-        print(f"Error: {e}")
+    test_cases = [
+        (Calculator.divide, (10, 0), "Division by zero"),
+        (Calculator.sqrt, (-1,), "Square root of negative"),
+        (MathOperations.calculate_factorial, (-5,), "Negative factorial"),
+        (StatisticsOperations.calculate_average, ([],), "Average of empty list"),
+        (StatisticsOperations.find_max, ([],), "Max of empty list"),
+    ]
+    
+    for func, args, description in test_cases:
+        try:
+            result = func(*args)
+            print(f"{description}: {result}")
+        except CalculatorError as e:
+            print(f"{description}: {type(e).__name__} - {e}")
+        except Exception as e:
+            print(f"{description}: Unexpected error - {type(e).__name__}: {e}")
 
 if __name__ == "__main__":
     main()
