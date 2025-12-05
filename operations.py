@@ -1,10 +1,13 @@
 class StatisticsOperations:
-    def calculate_average(self, numbers):
+    
+    @staticmethod
+    def calculate_average(numbers):
         if not numbers:
             return 0
         return sum(numbers) / len(numbers)
     
-    def find_max(self, numbers):
+    @staticmethod
+    def find_max(numbers):
         if not numbers:
             return None
         max_num = numbers[0]
@@ -13,7 +16,8 @@ class StatisticsOperations:
                 max_num = num
         return max_num
     
-    def find_min(self, numbers):
+    @staticmethod
+    def find_min(numbers):
         if not numbers:
             return None
         min_num = numbers[0]
@@ -24,7 +28,9 @@ class StatisticsOperations:
 
 
 class MathOperations:
-    def calculate_factorial(self, n):
+    
+    @staticmethod
+    def calculate_factorial(n):
         if n < 0:
             raise ValueError("Factorial is not defined for negative numbers!")
         result = 1
@@ -33,5 +39,21 @@ class MathOperations:
         return result
 
 
-class Operations(StatisticsOperations, MathOperations):
-    pass
+# Сохраняем старый класс для обратной совместимости
+class Operations:
+    
+    @staticmethod
+    def calculate_average(numbers):
+        return StatisticsOperations.calculate_average(numbers)
+    
+    @staticmethod
+    def find_max(numbers):
+        return StatisticsOperations.find_max(numbers)
+    
+    @staticmethod
+    def find_min(numbers):
+        return StatisticsOperations.find_min(numbers)
+    
+    @staticmethod
+    def calculate_factorial(n):
+        return MathOperations.calculate_factorial(n)
