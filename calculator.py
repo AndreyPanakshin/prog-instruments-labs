@@ -1,22 +1,29 @@
 class Calculator:
-    def add(self, a, b):
+    
+    @staticmethod
+    def add(a, b):
         return a + b
-
-    def subtract(self, a, b):
+    
+    @staticmethod
+    def subtract(a, b):
         return a - b
-
-    def multiply(self, a, b):
+    
+    @staticmethod
+    def multiply(a, b):
         return a * b
-
-    def divide(self, a, b):
+    
+    @staticmethod
+    def divide(a, b):
         if b == 0:
             raise ValueError("Cannot divide by zero!")
         return a / b
-
-    def power(self, a, b):
+    
+    @staticmethod
+    def power(a, b):
         return a ** b
-
-    def sqrt(self, a):
+    
+    @staticmethod
+    def sqrt(a):
         if a < 0:
             raise ValueError("Cannot calculate square root of negative number!")
         return a ** 0.5
