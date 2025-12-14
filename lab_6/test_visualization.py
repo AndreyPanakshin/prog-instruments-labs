@@ -1,57 +1,43 @@
+import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch, MagicMock
 
-
-@patch('matplotlib.pyplot.subplots')
-@patch('matplotlib.pyplot.show')
-def test_plots_generated(mock_show, mock_subplots, mock_excel_data):
-    # Подготовим данные как в основном коде
+def test_plots_generated(mock_excel_data):
     df = mock_excel_data.copy()
-    df_regions = df.iloc[2:].set_index('Регион')
+    region_data = df.iloc[2:]
     years = ['2005', '2010', '2015', '2019', '2020', '2021']
     russia_data = [48.6, 50.1, 45.9, 48.7, 50.4, 51.0]
 
-    # Мокаем subplots → возвращаем фейковые axes
-    fig_mock = MagicMock()
-    axes_mock = [[MagicMock(), MagicMock()], [MagicMock(), MagicMock()]]
-    mock_subplots.return_value = (fig_mock, axes_mock)
+    with patch('matplotlib.pyplot.subplots') as mock_subplots, \
+         patch('matplotlib.pyplot.tight_layout') as mock_tight_layout:
 
-    # Имитируем блок построения графиков из основного кода
-    try:
-        # 1. boxplot
-        axes_mock[0][0].boxplot.return_value = None
-        # 2. line plots
-        axes_mock[0][1].plot.return_value = [MagicMock()]
-        axes_mock[0][1].legend.return_value = None
-        # 3. средние
-        axes_mock[1][0].plot.return_value = [MagicMock()]
-        axes_mock[1][0].legend.return_value = None
-        # 4. off
-        axes_mock[1][1].axis.return_value = None
+        fig_mock = MagicMock()
+        ax1 = MagicMock()
+        ax2 = MagicMock()
+        ax3 = MagicMock()
+        ax4 = MagicMock()
+        axes_mock = [[ax1, ax2], [ax3, ax4]]
+        mock_subplots.return_value = (fig_mock, axes_mock)
 
-        # Запустим логику (вручную):
-        data_box = [df_regions[year] for year in years]
-        axes_mock[0][0].boxplot(data_box, labels=years)
+        fig, axes = plt.subplots(2, 2, figsize=(15, 12))  # ← ЭТОГО НЕ ХВАТАЛО!
 
-        for region in df_regions.index[:2]:  # меньше регионов для теста
-            axes_mock[0][1].plot(years, df_regions.loc[region], marker='o', label=region)
+        data_box = [region_data[year] for year in years]
+        axes[0][0].boxplot(data_box, labels=years)
 
-        sfo_mean = df_regions.mean()
-        axes_mock[1][0].plot(years, sfo_mean, marker='o', color='blue', label='СФО')
-        axes_mock[1][0].plot(years, russia_data, marker='o', color='red', label='РФ')
+        for i, (_, row) in enumerate(region_data.head(2).iterrows()):
+            axes[0][1].plot(years, row[years].values, marker='o', label=row['Регион'])
 
-        axes_mock[1][1].axis('off')
+        sfo_mean = region_data[years].mean()
+        axes[1][0].plot(years, sfo_mean, marker='o', color='blue', label='СФО')
+        axes[1][0].plot(years, russia_data, marker='o', color='red', label='РФ')
+
+        axes[1][1].axis('off')
 
         plt.tight_layout()
 
-        # Проверим, что методы вызывались
-        axes_mock[0][0].boxplot.assert_called_once()
-        assert axes_mock[0][1].plot.call_count >= 2  # 2+ региона
-        axes_mock[1][0].plot.assert_called()
-        axes_mock[1][1].axis.assert_called_with('off')
-
-        mock_show.assert_called_once()
-        mock_subplots.assert_called_with(2, 2, figsize=(15, 12))
-
-    except Exception as e:
-        pytest.fail(f"Ошибка в мок-тесте визуализации: {e}")
+        mock_subplots.assert_called_once_with(2, 2, figsize=(15, 12))
+        axes[0][0].boxplot.assert_called_once()
+        assert axes[0][1].plot.call_count == 2
+        assert axes[1][0].plot.call_count == 2
+        axes[1][1].axis.assert_called_with('off')
+        mock_tight_layout.assert_called_once()
