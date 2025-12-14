@@ -1,17 +1,15 @@
 import re
 
-EMAIL_PATTERN = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
-HTTP_STATUS_PATTERN = r"^(?:1|2|3|4|5)\d{2} [A-Za-z][A-Za-z0-9 \-]*$"
-INN_PATTERN = r"^\d{12}$"
+EMAIL_PATTERN = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+HEIGHT_PATTERN = r"^[0-2]\.\d{2}$"
+SNILS_PATTERN = r"^\\d{11}$"
 PASSPORT_PATTERN = r"^\d{2} \d{2} \d{6}$"
-IPV4_PATTERN = (
-    r"^(?:(?:25[0-5]|2[0-4]\d|1?\d{1,2})\.){3}(?:25[0-5]|2[0-4]\d|1?\d{1,2})$"
-)
-LATITUDE_PATTERN = r"^(-?(?:90(?:\.0{1,6})?|[1-8]?\d(?:\.\d{1,6})?))$"
-HEX_COLOR_PATTERN = r"^#[0-9A-Fa-f]{6}$"
-ISBN_PATTERN = r"^(\d{3}-)?\d-\d{5}-\d{3}-\d$"
-UUID_PATTERN = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
-TIME_PATTERN = r"^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)\.(\d{1,6})$"
+OCCUPATION_PATTERN = r"^[a-zA-Zа-яА-ЯёЁ\s-]+$"
+LONGITUDE_PATTERN = r"^-?(?:180(?:\\.0+)?|1[0-7][0-9](?:\\.[0-9]+)?|[0-9]{1,2}(?:\\.[0-9]+)?)$"
+HEX_COLOR_PATTERN = r"^#[0-9a-fA-F]{6}$"
+ISSN_PATTERN = r"^\d{4}-\d{3}[\dX]$"
+LOCALE_PATTERN = r"^[a-z]{2}(?:-[A-Za-z]{2,})?$"
+TIME_PATTERN = r"^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]{1,6})?$"
 
 DEFAULT_FILE_PATH = "75.csv"
 DEFAULT_VARIANT = 75
@@ -22,14 +20,14 @@ def get_validation_patterns() -> list[re.Pattern]:
     """Returns a list of compiled templates for verification."""
     patterns = [
         EMAIL_PATTERN,
-        HTTP_STATUS_PATTERN,
-        INN_PATTERN,
+        HEIGHT_PATTERN,
+        SNILS_PATTERN,
         PASSPORT_PATTERN,
-        IPV4_PATTERN,
-        LATITUDE_PATTERN,
+        OCCUPATION_PATTERN,
+        LONGITUDE_PATTERN,
         HEX_COLOR_PATTERN,
-        ISBN_PATTERN,
-        UUID_PATTERN,
+        ISSN_PATTERN,
+        LOCALE_PATTERN,
         TIME_PATTERN
     ]
-    return [re.compile(pattern) for pattern in patterns]
+    return [re.compile(pattern, re.IGNORECASE) for pattern in patterns]
