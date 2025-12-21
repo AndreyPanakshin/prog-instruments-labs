@@ -2,7 +2,7 @@
 
 import numpy as np
 import pytest
-from scipy.stats import f_oneway
+import scipy.stats 
 from unittest.mock import patch, Mock
 
 
@@ -88,3 +88,4 @@ def test_tukey_not_called_when_anova_not_significant(mock_excel_data):
         tukey_mock.assert_not_called()
     finally:
         scipy.stats.tukey_hsd = original_tukey
+
